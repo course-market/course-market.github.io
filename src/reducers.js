@@ -9,7 +9,7 @@ function courseMarketApp(state = initialState, action) {
       return Object.assign({}, window.COURSE_MARKET_DATA);
     case POST_COURSE:
       return Object.assign({}, state, {
-        listing: R.append(action.data, state.listing)
+        posts: R.append(action.data, state.posts)
       });
     case FILTER_LISTING:
       return Object.assign({}, state, {
