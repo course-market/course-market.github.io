@@ -3,11 +3,10 @@ import { take, takeLast } from 'ramda';
 import { createStore } from 'redux';
 import { load, postCourse } from './actions';
 import courseMarketApp from './reducers';
-import PostForm from './components/post_form';
-import PostListing from './components/post_listing';
 import Footer from './components/footer';
 import Title from './components/title';
-import RequestListing from './components/request_listing';
+import Listing from './components/listing';
+import Form from './components/form';
 
 window.COURSE_MARKET_DATA = {
   courses: [],
@@ -65,15 +64,20 @@ export default class App extends React.Component {
         <Title />
         <div className='clearfix'>
           <div className='half left'>
-            <PostListing list={this.state.posts} />
+            <Listing title='Posts' list={this.state.posts} />
           </div>
           <div className='half right'>
-            <RequestListing list={this.state.requests} />
+            <Listing title='Requests' list={this.state.requests} />
           </div>
         </div>
-        <PostForm
-          postCourse={(data) => store.dispatch(postCourse(data))}
+        <Form
+          title='Post Class'
+          onSubmit={(data) => store.dispatch(postCourse(data))}
           courses={this.state.courses} />
+        <Form
+          title='Request Class'
+          onSumbit={(data) => console.log(data)}
+          courses={this.state.courses}/>
         <Footer />
       </div>
     );

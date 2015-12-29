@@ -1,8 +1,9 @@
 import React from 'react';
 import ListingItem from './listing_item';
 import SearchBar from './search_bar';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
-export default class PostListing extends React.Component {
+export default class Listing extends React.Component {
 
   constructor(props) {
     super(props);
@@ -17,13 +18,18 @@ export default class PostListing extends React.Component {
   render() {
     let list = filter(this.props.list, this.state.query);
     return (
-      <div className='mb4'>
-        <div className='medium blue border-bottom-gray mb2'>Posts</div>
+      <div>
+        <div className='medium blue border-bottom-gray mb2'>{this.props.title}</div>
         <div className='mb2'>
           <SearchBar onChange={this.onChange.bind(this)} />
         </div>
         <div>
-          {list.map(this.renderItem)}
+          <ReactCSSTransitionGroup
+            transitionName='list-fade'
+            transitionEnterTimeout={500}
+            transitionLeaveTimeout={300}>
+            {list.map(this.renderItem)}
+          </ReactCSSTransitionGroup>
         </div>
       </div>
     );
@@ -32,6 +38,7 @@ export default class PostListing extends React.Component {
   renderItem(data, i) {
     return <ListingItem data={data} key={i} />;
   }
+
 }
 
 var filter = (list, query) =>

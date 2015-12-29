@@ -13,7 +13,7 @@ export default class ListingItem extends React.Component {
 
   render() {
     return (
-      <div className='clearfix listing-item mb1' onClick={this.toggleDetails.bind(this)}>
+      <div className='clearfix listing-item mb1 pad0' onClick={this.toggleDetails.bind(this)}>
         {this.state.details ? this.detailView() : this.briefView()}
       </div>
     );
@@ -33,7 +33,7 @@ export default class ListingItem extends React.Component {
     let { courseId, title, meetTimes, meetDays } = this.props.data.courseDetails;
     let posters = this.props.data.posters;
     return (
-      <div className='bg-blue pad1'>
+      <div className='bg-blue pad0 rounded'>
         <div className='clearfix mb2'>
           <div className='col3'>{courseId}</div>
           <div className='col8'>{title}</div>

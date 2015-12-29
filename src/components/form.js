@@ -6,7 +6,7 @@ const COURSE = 'course';
 const SECTION = 'section';
 const EMAIL = 'email';
 
-export default class PostForm extends React.Component {
+export default class Form extends React.Component {
 
   constructor(props) {
     super(props);
@@ -44,9 +44,9 @@ export default class PostForm extends React.Component {
       sections = getSections(this.props.courses, this.state.department, this.state.course);
     }
     return (
-      <div className='mb4'>
+      <div className='mb5'>
 
-        <div className='medium blue border-bottom-gray mb2'>Post Class</div>
+        <div className='medium blue border-bottom-gray mb2'>{this.props.title}</div>
 
         <div className='mb1 clearfix'>
           <div className='col2'>Department:</div>

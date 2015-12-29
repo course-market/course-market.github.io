@@ -39,15 +39,19 @@ html, body {
 .mb4 { margin-bottom: 40px; }
 .mb5 { margin-bottom: 50px; }
 
+.mr1 {margin-right: 10px; }
+.mr2 {margin-right: 20px; }
 .mr3 {margin-right: 30px; }
 
+.pad0 { padding: 5px; }
 .pad1 { padding: 10px; }
 
 .gray { color: #a6a6a6; }
 .blue { color: #66c1ff; }
 .red  { color: #e74c3c; }
 
-.icon-small { height: 10px; }
+.icon-small  { height: 10px; }
+.icon-medium { height: 30px; }
 
 .underline { text-decoration: underline; }
 
@@ -79,6 +83,9 @@ input {
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
   border-radius: 6px;
+  font-size: 14px;
+  height: 25px;
+  transition: opacity 0.5s linear;
 }
 input:hover { border: 1px solid #66c1ff; }
 input:focus { outline: none; border: 1px solid #66c1ff; }
@@ -103,13 +110,13 @@ input:focus { outline: none; border: 1px solid #66c1ff; }
 .half { width: 48%; }
 
 // http://www.positioniseverything.net/easyclearing.html
-.clearfix { display:block; }
+.clearfix { display: block; }
 .clearfix:after {
-  content:'';
-  display:block;
-  height:0;
-  clear:both;
-  visibility:hidden;
+  content: '';
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
 }
 
 .left  { float: left; }
@@ -118,6 +125,30 @@ input:focus { outline: none; border: 1px solid #66c1ff; }
 .listing-item:hover {
   background-color: #66c1ff;
   cursor: pointer;
+  -webkit-border-radius: 6px;
+     -moz-border-radius: 6px;
+          border-radius: 6px;
 }
 
 .bg-blue { background-color: #66c1ff; }
+
+.hidden  { visibility: hidden; }
+.visible { visibility: visible; }
+
+.list-fade-enter {
+  opacity: 0.01;
+}
+
+.list-fade-enter.list-fade-enter-active {
+  opacity: 1;
+  transition: opacity 500ms ease-in;
+}
+
+.list-fade-leave {
+  opacity: 1;
+}
+
+.list-fade-leave.list-fade-leave-active {
+  opacity: 0.01;
+  transition: opacity 300ms ease-in;
+}
