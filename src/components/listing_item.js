@@ -31,7 +31,7 @@ export default class ListingItem extends React.Component {
 
   detailView() {
     let { courseId, title, meetTimes, meetDays } = this.props.data.courseDetails;
-    let posters = this.props.data.posters;
+    let emails = this.props.data.emails;
     return (
       <div className='bg-blue pad0 rounded'>
         <div className='clearfix mb2'>
@@ -44,7 +44,7 @@ export default class ListingItem extends React.Component {
         <div>
           Requesters:
           <ul>
-            {posters.map((p, i) => <li key={i}><a href={`mailto:${p}`}>{p}</a></li>)}
+            {emails.map((p, i) => <li key={i}><a href={`mailto:${p}`}>{p}</a></li>)}
           </ul>
         </div>
       </div>

@@ -1,15 +1,37 @@
-export const POST_COURSE = 'POST_COURSE';
-export const FILTER_LISTING = 'FILTER_LISTING';
-export const LOAD = 'LOAD';
+/* eslint no-multi-spaces: [0] */
+export const SWITCH_SEMESTER = 'SWITCH_SEMESTER';
+export const LOAD_SEMESTERS  = 'LOAD_SEMESTERS';
+export const LOAD_CATALOG    = 'LOAD_CATALOG';
+export const LOAD_POSTS      = 'LOAD_POSTS';
+export const LOAD_REQUESTS   = 'LOAD_REQUESTS';
+export const SUBMIT_POST     = 'SUBMIT_POST';
+export const SUBMIT_REQUEST  = 'SUBMIT_REQUEST';
 
-export function load() {
-  return { type: LOAD };
+export function switchSemester(semester) {
+  return { type: SWITCH_SEMESTER, semester };
 }
 
-export function postCourse(data) {
-  return { type: POST_COURSE, data };
+export function loadSemesters() {
+  return { type: LOAD_SEMESTERS };
 }
 
-export function filterListing(search) {
-  return { type: FILTER_LISTING, search };
+export function loadCatalog() {
+  return { type: LOAD_CATALOG };
 }
+
+export function loadPosts() {
+  return { type: LOAD_POSTS };
+}
+
+export function loadRequests() {
+  return { type: LOAD_REQUESTS };
+}
+
+export function submitPost(data) {
+  return { type: SUBMIT_POST, data };
+}
+
+export function submitRequest(data) {
+  return { type: SUBMIT_REQUEST, data };
+}
+

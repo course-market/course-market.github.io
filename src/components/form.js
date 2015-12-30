@@ -19,9 +19,10 @@ export default class Form extends React.Component {
     };
   }
 
-  post() {
-    this.props.postCourse(getCourse(
-          this.props.courses, this.state.department, this.state.course, this.state.section));
+  submit() {
+    let courseId = getCourse(this.props.catalog, this.state.department,
+        this.state.course, this.state.section);
+    this.props.onSubmit({ courseId, email: this.state.email });
   }
 
   onChange(select, e) {
@@ -39,12 +40,12 @@ export default class Form extends React.Component {
 
   render() {
     let courses, sections, departments;
-    departments = getDepartments(this.props.courses);
+    departments = getDepartments(this.props.catalog);
     if (this.state.departments !== null) {
-      courses = getCourses(this.props.courses, this.state.department);
+      courses = getCourses(this.props.catalog, this.state.department);
     }
     if (this.state.course != null) {
-      sections = getSections(this.props.courses, this.state.department, this.state.course);
+      sections = getSections(this.props.catalog, this.state.department, this.state.course);
     }
     return (
       <div className='mb5'>
@@ -87,7 +88,7 @@ export default class Form extends React.Component {
         </div>}
 
         {this.state.validEmail && <div className='mb1 clearfix center'>
-          <button onClick={this.post.bind(this)} className='button rounded border-blue'>Post</button>
+          <button onClick={this.submit.bind(this)} className='button rounded border-blue'>Post</button>
         </div>}
 
       </div>
@@ -96,11 +97,11 @@ export default class Form extends React.Component {
 
 }
 
-var getDepartments = (courses) =>
-    R.uniq(courses.map(c => c.courseId.split(' ')[0]));
+var getDepartments = (catalog) =>
+    R.uniq(catalog.map(c => c.courseId.split(' ')[0]));
 
-var getCourses = (courses, department) =>
-    courses
+var getCourses = (catalog, department) =>
+    catalog
       .filter(c => c.courseId.indexOf(department) > -1)
       .map(c => {
         return {
@@ -110,8 +111,8 @@ var getCourses = (courses, department) =>
       });
 
 
-var getSections = (courses, department, course) =>
-    courses
+var getSections = (catalog, department, course) =>
+    catalog
       .filter(c => c.courseId.indexOf(department) > -1 && c.courseId.indexOf(course) > -1)
       .map(c => {
         return {
@@ -121,11 +122,11 @@ var getSections = (courses, department, course) =>
         };
       });
 
-var getCourse = (courses, department, course, section) =>
-    courses.filter(c =>
+var getCourse = (catalog, department, course, section) =>
+    catalog.filter(c =>
         c.courseId.indexOf(department) > -1 &&
         c.courseId.indexOf(course) > -1 &&
-        c.courseId.indexOf(section) > -1)[0];
+        c.courseId.indexOf(section) > -1)[0].courseId;
 
 function validateEmail(email) {
   if (email === null || email === '') {
