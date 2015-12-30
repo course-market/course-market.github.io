@@ -19,11 +19,11 @@ export default class Listing extends React.Component {
     let list = filter(this.props.list, this.state.query);
     return (
       <div>
-        <div className='medium blue border-bottom-gray mb2'>{this.props.title}</div>
-        <div className='mb2'>
+        <div className='medium blue border-bottom-gray'>{this.props.title}</div>
+        <div className='pad2 border-bottom-gray'>
           <SearchBar onChange={this.onChange.bind(this)} />
         </div>
-        <div>
+        <div className='row5'>
           <ReactCSSTransitionGroup
             transitionName='list-fade'
             transitionEnterTimeout={500}

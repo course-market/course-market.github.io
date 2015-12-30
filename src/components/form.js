@@ -14,7 +14,8 @@ export default class Form extends React.Component {
       department: null,
       course: null,
       section: null,
-      email: null
+      email: null,
+      validEmail: false
     };
   }
 
@@ -30,6 +31,8 @@ export default class Form extends React.Component {
       data.section = null;
     } else if (select === COURSE) {
       data.section = null;
+    } else if (select === EMAIL) {
+      data.validEmail = validateEmail(e.target.value);
     }
     this.setState(data);
   }
@@ -49,7 +52,7 @@ export default class Form extends React.Component {
         <div className='medium blue border-bottom-gray mb2'>{this.props.title}</div>
 
         <div className='mb1 clearfix'>
-          <div className='col2'>Department:</div>
+          <div className='col3'>Department:</div>
           <select
             className='col7'
             onChange={this.onChange.bind(this, DEPARTMENT)}>
@@ -59,7 +62,7 @@ export default class Form extends React.Component {
         </div>
 
         {this.state.department !== null && <div className='mb1 clearfix'>
-          <div className='col2'>Course:</div>
+          <div className='col3'>Course:</div>
           <select
             className='col7'
             onChange={this.onChange.bind(this, COURSE)}>
@@ -69,7 +72,7 @@ export default class Form extends React.Component {
         </div>}
 
         {this.state.course !== null && <div className='mb1 clearfix'>
-          <div className='col2'>Section:</div>
+          <div className='col3'>Section:</div>
           <select
             className='col7'
             onChange={this.onChange.bind(this, SECTION)}>
@@ -79,11 +82,11 @@ export default class Form extends React.Component {
         </div>}
 
         {this.state.section != null && <div className='mb1 clearfix'>
-          <div className='col2'>Email:</div>
-          <input type='text' className='border-gray col7' onChange={this.onChange.bind(this, EMAIL)} />
+          <div className='col3'>WM Email:</div>
+          <input type='text' className={'border-gray col7' + (this.state.validEmail ? ' valid' : ' invalid')} onChange={this.onChange.bind(this, EMAIL)} />
         </div>}
 
-        {validateEmail(this.state.email) && <div className='mb1 clearfix'>
+        {this.state.validEmail && <div className='mb1 clearfix center'>
           <button onClick={this.post.bind(this)} className='button rounded border-blue'>Post</button>
         </div>}
 
@@ -128,5 +131,6 @@ function validateEmail(email) {
   if (email === null || email === '') {
     return false;
   }
-  return true;
+  var re = /^[a-zA-Z]+@(email.)?wm.edu$/;
+  return re.test(email);
 }

@@ -20,7 +20,7 @@ var store;
   store = createStore(courseMarketApp, window.COURSE_MARKET_DATA);
 })();
 
-fetch('http://localhost:3000/data/spring')
+fetch('http://ec2-54-173-94-238.compute-1.amazonaws.com:8080/data/')
   .then(res => res.json())
   .then(data => {
     window.COURSE_MARKET_DATA.courses = data;
@@ -63,21 +63,29 @@ export default class App extends React.Component {
       <div className='container'>
         <Title />
         <div className='clearfix'>
-          <div className='half left'>
+          <div className='col48 left'>
             <Listing title='Posts' list={this.state.posts} />
           </div>
-          <div className='half right'>
+          <div className='col48 right'>
             <Listing title='Requests' list={this.state.requests} />
           </div>
         </div>
-        <Form
-          title='Post Class'
-          onSubmit={(data) => store.dispatch(postCourse(data))}
-          courses={this.state.courses} />
-        <Form
-          title='Request Class'
-          onSumbit={(data) => console.log(data)}
-          courses={this.state.courses}/>
+        <div className='clearfix'>
+          <div className='col6 mlq'>
+            <Form
+              title='Post Class'
+              onSubmit={(data) => store.dispatch(postCourse(data))}
+              courses={this.state.courses} />
+          </div>
+        </div>
+        <div className='clearfix'>
+          <div className='col6 mlq'>
+            <Form
+              title='Request Class'
+              onSumbit={(data) => console.log(data)}
+              courses={this.state.courses}/>
+          </div>
+        </div>
         <Footer />
       </div>
     );

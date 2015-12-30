@@ -32,6 +32,7 @@ html, body {
 }
 
 .center { text-align: center; }
+.div-center { margin-left: auto; margin-right: auto; }
 
 .mb1 { margin-bottom: 10px; }
 .mb2 { margin-bottom: 20px; }
@@ -43,8 +44,11 @@ html, body {
 .mr2 {margin-right: 20px; }
 .mr3 {margin-right: 30px; }
 
+.mlq { margin-left: 25%; }
+
 .pad0 { padding: 5px; }
 .pad1 { padding: 10px; }
+.pad2 { padding: 20px; }
 
 .gray { color: #a6a6a6; }
 .blue { color: #66c1ff; }
@@ -78,6 +82,10 @@ html, body {
   border: 1px solid #00bfff;
 }
 
+select {
+  height: 25px;
+}
+
 input {
   border: 1px solid #a6a6a6;
   -moz-border-radius: 6px;
@@ -89,6 +97,17 @@ input {
 }
 input:hover { border: 1px solid #66c1ff; }
 input:focus { outline: none; border: 1px solid #66c1ff; }
+
+input.invalid,
+input.invalid:hover,
+input.invalid:focus {
+  border: 1px solid #e74c3c;
+}
+input.valid,
+input.valid:hover,
+input.valid:focus {
+  border: 1px solid #2ecc71;
+}
 
 .block { display: block; }
 
@@ -107,7 +126,9 @@ input:focus { outline: none; border: 1px solid #66c1ff; }
 .col11   { float:left; width:91.6666%; max-width:1100px; }
 .col12   { width:100%; display:block; }
 
-.half { width: 48%; }
+.col48 { width: 48%; }
+
+.row5 { height: 500px; overflow: scroll; }
 
 // http://www.positioniseverything.net/easyclearing.html
 .clearfix { display: block; }
