@@ -28794,7 +28794,7 @@ var store;
   store = (0, _redux.createStore)(_reducers2.default, window.COURSE_MARKET_DATA);
 })();
 
-fetch('http://localhost:3000/data/spring').then(function (res) {
+fetch('http://ec2-54-173-94-238.compute-1.amazonaws.com:8080/data/').then(function (res) {
   return res.json();
 }).then(function (data) {
   window.COURSE_MARKET_DATA.courses = data;
@@ -28843,17 +28843,17 @@ var App = (function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      return _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement(_title2.default, null), _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'half left' }, _react2.default.createElement(_listing2.default, { title: 'Posts', list: this.state.posts })), _react2.default.createElement('div', { className: 'half right' }, _react2.default.createElement(_listing2.default, { title: 'Requests', list: this.state.requests }))), _react2.default.createElement(_form2.default, {
+      return _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement(_title2.default, null), _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'col48 left' }, _react2.default.createElement(_listing2.default, { title: 'Posts', list: this.state.posts })), _react2.default.createElement('div', { className: 'col48 right' }, _react2.default.createElement(_listing2.default, { title: 'Requests', list: this.state.requests }))), _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'col6 mlq' }, _react2.default.createElement(_form2.default, {
         title: 'Post Class',
         onSubmit: function onSubmit(data) {
           return store.dispatch((0, _actions.postCourse)(data));
         },
-        courses: this.state.courses }), _react2.default.createElement(_form2.default, {
+        courses: this.state.courses }))), _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'col6 mlq' }, _react2.default.createElement(_form2.default, {
         title: 'Request Class',
         onSumbit: function onSumbit(data) {
           return console.log(data);
         },
-        courses: this.state.courses }), _react2.default.createElement(_footer2.default, null));
+        courses: this.state.courses }))), _react2.default.createElement(_footer2.default, null));
     }
   }]);
 
@@ -29004,7 +29004,8 @@ var Form = (function (_React$Component) {
       department: null,
       course: null,
       section: null,
-      email: null
+      email: null,
+      validEmail: false
     };
     return _this;
   }
@@ -29023,6 +29024,8 @@ var Form = (function (_React$Component) {
         data.section = null;
       } else if (select === COURSE) {
         data.section = null;
+      } else if (select === EMAIL) {
+        data.validEmail = validateEmail(e.target.value);
       }
       this.setState(data);
     }
@@ -29039,19 +29042,19 @@ var Form = (function (_React$Component) {
       if (this.state.course != null) {
         sections = getSections(this.props.courses, this.state.department, this.state.course);
       }
-      return _react2.default.createElement('div', { className: 'mb5' }, _react2.default.createElement('div', { className: 'medium blue border-bottom-gray mb2' }, this.props.title), _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col2' }, 'Department:'), _react2.default.createElement('select', {
+      return _react2.default.createElement('div', { className: 'mb5' }, _react2.default.createElement('div', { className: 'medium blue border-bottom-gray mb2' }, this.props.title), _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col3' }, 'Department:'), _react2.default.createElement('select', {
         className: 'col7',
         onChange: this.onChange.bind(this, DEPARTMENT) }, _react2.default.createElement('option', { value: null }, ' -- select a department -- '), departments.map(function (d, i) {
         return _react2.default.createElement('option', { key: i }, d);
-      }))), this.state.department !== null && _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col2' }, 'Course:'), _react2.default.createElement('select', {
+      }))), this.state.department !== null && _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col3' }, 'Course:'), _react2.default.createElement('select', {
         className: 'col7',
         onChange: this.onChange.bind(this, COURSE) }, _react2.default.createElement('option', { value: null }, ' -- select a course -- '), courses.map(function (c, i) {
         return _react2.default.createElement('option', { key: i, value: c.id }, c.id, ' - ', c.title);
-      }))), this.state.course !== null && _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col2' }, 'Section:'), _react2.default.createElement('select', {
+      }))), this.state.course !== null && _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col3' }, 'Section:'), _react2.default.createElement('select', {
         className: 'col7',
         onChange: this.onChange.bind(this, SECTION) }, _react2.default.createElement('option', { value: null }, ' -- select a section-- '), sections.map(function (s, i) {
         return _react2.default.createElement('option', { key: i, value: s.number }, s.meetDays, ' - ', s.meetTimes);
-      }))), this.state.section != null && _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col2' }, 'Email:'), _react2.default.createElement('input', { type: 'text', className: 'border-gray col7', onChange: this.onChange.bind(this, EMAIL) })), validateEmail(this.state.email) && _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('button', { onClick: this.post.bind(this), className: 'button rounded border-blue' }, 'Post')));
+      }))), this.state.section != null && _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col3' }, 'WM Email:'), _react2.default.createElement('input', { type: 'text', className: 'border-gray col7' + (this.state.validEmail ? ' valid' : ' invalid'), onChange: this.onChange.bind(this, EMAIL) })), this.state.validEmail && _react2.default.createElement('div', { className: 'mb1 clearfix center' }, _react2.default.createElement('button', { onClick: this.post.bind(this), className: 'button rounded border-blue' }, 'Post')));
     }
   }]);
 
@@ -29099,7 +29102,8 @@ function validateEmail(email) {
   if (email === null || email === '') {
     return false;
   }
-  return true;
+  var re = /^[a-zA-Z]+@(email.)?wm.edu$/;
+  return re.test(email);
 }
 
 },{"ramda":2,"react":166}],180:[function(require,module,exports){
@@ -29181,7 +29185,7 @@ var Listing = (function (_React$Component) {
     key: 'render',
     value: function render() {
       var list = filter(this.props.list, this.state.query);
-      return _react2.default.createElement('div', null, _react2.default.createElement('div', { className: 'medium blue border-bottom-gray mb2' }, this.props.title), _react2.default.createElement('div', { className: 'mb2' }, _react2.default.createElement(_search_bar2.default, { onChange: this.onChange.bind(this) })), _react2.default.createElement('div', null, _react2.default.createElement(_reactAddonsCssTransitionGroup2.default, {
+      return _react2.default.createElement('div', null, _react2.default.createElement('div', { className: 'medium blue border-bottom-gray' }, this.props.title), _react2.default.createElement('div', { className: 'pad2 border-bottom-gray' }, _react2.default.createElement(_search_bar2.default, { onChange: this.onChange.bind(this) })), _react2.default.createElement('div', { className: 'row5' }, _react2.default.createElement(_reactAddonsCssTransitionGroup2.default, {
         transitionName: 'list-fade',
         transitionEnterTimeout: 500,
         transitionLeaveTimeout: 300 }, list.map(this.renderItem))));
