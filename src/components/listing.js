@@ -19,7 +19,7 @@ export default class Listing extends React.Component {
     let list = filter(this.props.list, this.state.query);
     return (
       <div>
-        <div className='medium blue border-bottom-gray'>{this.props.title}</div>
+        <div className='medium blue border-bottom-gray light'>{this.props.title}</div>
         <div className='pad2 border-bottom-gray'>
           <SearchBar onChange={this.onChange.bind(this)} />
         </div>
@@ -28,7 +28,7 @@ export default class Listing extends React.Component {
             transitionName='list-fade'
             transitionEnterTimeout={500}
             transitionLeaveTimeout={300}>
-            {list.map(this.renderItem)}
+            {list.map(this.renderItem.bind(this))}
           </ReactCSSTransitionGroup>
         </div>
       </div>
@@ -36,7 +36,7 @@ export default class Listing extends React.Component {
   }
 
   renderItem(data, i) {
-    return <ListingItem data={data} key={i} />;
+    return <ListingItem data={data} key={i} onRemove={this.props.onRemove} />;
   }
 
 }

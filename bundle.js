@@ -16756,8 +16756,8 @@ var HTMLDOMPropertyConfig = {
      */
     // autoCapitalize and autoCorrect are supported in Mobile Safari for
     // keyboard hints.
-    autoCapitalize: null,
-    autoCorrect: null,
+    autoCapitalize: MUST_USE_ATTRIBUTE,
+    autoCorrect: MUST_USE_ATTRIBUTE,
     // autoSave allows WebKit/Blink to persist values of input fields on page reloads
     autoSave: null,
     // color is for Safari mask-icon link
@@ -16788,9 +16788,7 @@ var HTMLDOMPropertyConfig = {
     httpEquiv: 'http-equiv'
   },
   DOMPropertyNames: {
-    autoCapitalize: 'autocapitalize',
     autoComplete: 'autocomplete',
-    autoCorrect: 'autocorrect',
     autoFocus: 'autofocus',
     autoPlay: 'autoplay',
     autoSave: 'autosave',
@@ -21483,7 +21481,7 @@ function updateOptionsIfPendingUpdateAndMounted() {
     var value = LinkedValueUtils.getValue(props);
 
     if (value != null) {
-      updateOptions(this, props, value);
+      updateOptions(this, Boolean(props.multiple), value);
     }
   }
 }
@@ -22562,7 +22560,9 @@ var DOM_OPERATION_TYPES = {
   'setValueForProperty': 'update attribute',
   'setValueForAttribute': 'update attribute',
   'deleteValueForProperty': 'remove attribute',
-  'dangerouslyReplaceNodeWithMarkupByID': 'replace'
+  'setValueForStyles': 'update styles',
+  'replaceNodeWithMarkup': 'replace',
+  'updateTextContent': 'set textContent'
 };
 
 function getTotalTime(measurements) {
@@ -28025,7 +28025,7 @@ module.exports = ReactUpdates;
 
 'use strict';
 
-module.exports = '0.14.3';
+module.exports = '0.14.5';
 },{}],95:[function(require,module,exports){
 /**
  * Copyright 2013-2015, Facebook, Inc.
@@ -32389,15 +32389,11 @@ module.exports = focusNode;
  * Same as document.activeElement but wraps in a try-catch block. In IE it is
  * not safe to call document.activeElement if there is nothing focused.
  *
- * The activeElement will be null only if the document or document body is not yet defined.
+ * The activeElement will be null only if the document body is not yet defined.
  */
-'use strict';
+"use strict";
 
 function getActiveElement() /*?DOMElement*/{
-  if (typeof document === 'undefined') {
-    return null;
-  }
-
   try {
     return document.activeElement || document.body;
   } catch (e) {
@@ -32643,7 +32639,7 @@ module.exports = hyphenateStyleName;
  * will remain to ensure logic does not differ in production.
  */
 
-var invariant = function (condition, format, a, b, c, d, e, f) {
+function invariant(condition, format, a, b, c, d, e, f) {
   if (process.env.NODE_ENV !== 'production') {
     if (format === undefined) {
       throw new Error('invariant requires an error message argument');
@@ -32657,15 +32653,16 @@ var invariant = function (condition, format, a, b, c, d, e, f) {
     } else {
       var args = [a, b, c, d, e, f];
       var argIndex = 0;
-      error = new Error('Invariant Violation: ' + format.replace(/%s/g, function () {
+      error = new Error(format.replace(/%s/g, function () {
         return args[argIndex++];
       }));
+      error.name = 'Invariant Violation';
     }
 
     error.framesToPop = 1; // we don't care about invariant's own frame
     throw error;
   }
-};
+}
 
 module.exports = invariant;
 }).call(this,require('_process'))
@@ -32930,18 +32927,23 @@ module.exports = performance || {};
 'use strict';
 
 var performance = require('./performance');
-var curPerformance = performance;
+
+var performanceNow;
 
 /**
  * Detect if we can use `window.performance.now()` and gracefully fallback to
  * `Date.now()` if it doesn't exist. We need to support Firefox < 15 for now
  * because of Facebook's testing infrastructure.
  */
-if (!curPerformance || !curPerformance.now) {
-  curPerformance = Date;
+if (performance.now) {
+  performanceNow = function () {
+    return performance.now();
+  };
+} else {
+  performanceNow = function () {
+    return Date.now();
+  };
 }
-
-var performanceNow = curPerformance.now.bind(curPerformance);
 
 module.exports = performanceNow;
 },{"./performance":162}],164:[function(require,module,exports){
@@ -33682,6 +33684,8 @@ exports.loadPosts = loadPosts;
 exports.loadRequests = loadRequests;
 exports.submitPost = submitPost;
 exports.submitRequest = submitRequest;
+exports.deletePost = deletePost;
+exports.deleteRequest = deleteRequest;
 /* eslint no-multi-spaces: [0] */
 var SWITCH_SEMESTER = exports.SWITCH_SEMESTER = 'SWITCH_SEMESTER';
 var LOAD_SEMESTERS = exports.LOAD_SEMESTERS = 'LOAD_SEMESTERS';
@@ -33690,6 +33694,8 @@ var LOAD_POSTS = exports.LOAD_POSTS = 'LOAD_POSTS';
 var LOAD_REQUESTS = exports.LOAD_REQUESTS = 'LOAD_REQUESTS';
 var SUBMIT_POST = exports.SUBMIT_POST = 'SUBMIT_POST';
 var SUBMIT_REQUEST = exports.SUBMIT_REQUEST = 'SUBMIT_REQUEST';
+var DELETE_POST = exports.DELETE_POST = 'DELETE_POST';
+var DELETE_REQUEST = exports.DELETE_REQUEST = 'DELETE_REQUEST';
 
 function switchSemester(semester) {
   return { type: SWITCH_SEMESTER, semester: semester };
@@ -33719,6 +33725,14 @@ function submitRequest(data) {
   return { type: SUBMIT_REQUEST, data: data };
 }
 
+function deletePost(data) {
+  return { type: DELETE_POST, data: data };
+}
+
+function deleteRequest(data) {
+  return { type: DELETE_REQUEST, data: data };
+}
+
 },{}],178:[function(require,module,exports){
 'use strict';
 
@@ -33727,6 +33741,8 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.submitPostAPI = submitPostAPI;
 exports.submitRequestAPI = submitRequestAPI;
+exports.deletePostAPI = deletePostAPI;
+exports.deleteRequestAPI = deleteRequestAPI;
 exports.fetchPosts = fetchPosts;
 exports.fetchRequests = fetchRequests;
 exports.fetchCatalog = fetchCatalog;
@@ -33735,14 +33751,22 @@ exports.fetchSemesters = fetchSemesters;
  * API wrapper
  */
 
-var URL = 'http://ec2-54-173-94-238.compute-1.amazonaws.com:8080';
-//const URL = 'http://localhost:8080'; // for development
+//const URL = 'http://ec2-54-173-94-238.compute-1.amazonaws.com:8080';
+var URL = 'http://localhost:8080'; // for development
 
+/**
+ * Submit a post
+ *
+ * @param data
+ * @param {String} data.semester
+ * @param {String} data.email
+ * @param {String} data.courseId }
+ */
 function submitPostAPI(data) {
   return new Promise(function (resolve, reject) {
     var semester = data.semester;
 
-    fetch(URL + '/submit/post/' + semester, {
+    fetch(URL + '/post/submit/' + semester, {
       method: 'POST',
       headers: new Headers({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data)
@@ -33754,11 +33778,19 @@ function submitPostAPI(data) {
   });
 }
 
+/**
+ * Submit a request
+ *
+ * @param data
+ * @param {String} data.semester
+ * @param {String} data.email
+ * @param {String} data.courseId
+ */
 function submitRequestAPI(data) {
   return new Promise(function (resolve, reject) {
     var semester = data.semester;
 
-    fetch(URL + '/submit/request/' + semester, {
+    fetch(URL + '/request/submit/' + semester, {
       method: 'POST',
       headers: new Headers({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data)
@@ -33770,6 +33802,53 @@ function submitRequestAPI(data) {
   });
 }
 
+/**
+ * Delete a post
+ *
+ * @param data
+ * @param {String} data.semester
+ * @param {String} data.email
+ * @param {String} data.courseId
+ */
+function deletePostAPI(data) {
+  return new Promise(function (resolve, reject) {
+    var semester = data.semester;
+
+    var courseId = encodeURIComponent(data.courseId);
+    var email = encodeURIComponent(data.email);
+    fetch(URL + '/post/delete/' + semester + '/' + courseId + '/' + email, { method: 'DELETE' }).then(function (res) {
+      return resolve(res);
+    }).catch(function (e) {
+      return reject(e);
+    });
+  });
+}
+
+/**
+ * Delete a request
+ *
+ * @param data
+ * @param {String} data.semester
+ * @param {String} data.email
+ * @param {String} data.courseId
+ */
+function deleteRequestAPI(data) {
+  return new Promise(function (resolve, reject) {
+    var semester = data.semester;
+
+    var courseId = encodeURIComponent(data.courseId);
+    var email = encodeURIComponent(data.email);
+    fetch(URL + '/request/delete/' + semester + '/' + courseId + '/' + email, { method: 'DELETE' }).then(function (res) {
+      return resolve(res);
+    }).then(function (e) {
+      return reject(e);
+    });
+  });
+}
+
+/**
+ * @param {String} semester
+ */
 function fetchPosts(semester) {
   return new Promise(function (resolve, reject) {
     fetch(URL + '/posts/' + semester).then(function (res) {
@@ -33782,6 +33861,9 @@ function fetchPosts(semester) {
   });
 }
 
+/**
+ * @param {String} semester
+ */
 function fetchRequests(semester) {
   return new Promise(function (resolve, reject) {
     fetch(URL + '/requests/' + semester).then(function (res) {
@@ -33794,6 +33876,9 @@ function fetchRequests(semester) {
   });
 }
 
+/**
+ * @param {String} semester
+ */
 function fetchCatalog(semester) {
   return new Promise(function (resolve, reject) {
     fetch(URL + '/catalog/' + semester).then(function (res) {
@@ -33972,6 +34057,7 @@ var App = (function (_React$Component) {
   }, {
     key: 'switchSemester',
     value: function switchSemester(e) {
+      window.COURSE_MARKET_DATA.semester = e.target.value;
       loadSemester(e.target.value);
     }
   }, {
@@ -33995,17 +34081,43 @@ var App = (function (_React$Component) {
       });
     }
   }, {
+    key: 'removePost',
+    value: function removePost(data) {
+      store.dispatch((0, _actions.deletePost)(data));
+      (0, _api.deletePostAPI)({
+        semester: store.getState().get('semester'),
+        email: data.email,
+        courseId: data.courseId
+      });
+    }
+  }, {
+    key: 'removeRequest',
+    value: function removeRequest(data) {
+      store.dispatch((0, _actions.deleteRequest)(data));
+      (0, _api.deleteRequestAPI)({
+        semester: store.getState().get('semester'),
+        email: data.email,
+        courseId: data.courseId
+      });
+    }
+  }, {
     key: 'render',
     value: function render() {
-      return _react2.default.createElement('div', { className: 'container' }, _react2.default.createElement(_title2.default, null), _react2.default.createElement(_semester_select2.default, {
+      return _react2.default.createElement('div', { className: '' }, _react2.default.createElement('div', { className: 'container clearfix' }, _react2.default.createElement('div', { className: 'col8' }, _react2.default.createElement(_title2.default, null)), _react2.default.createElement('div', { className: 'col3' }, _react2.default.createElement(_semester_select2.default, {
         semesters: this.state.semesters,
-        onChange: this.switchSemester }), _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'col48 left' }, _react2.default.createElement(_listing2.default, { title: 'Posts', list: this.state.posts })), _react2.default.createElement('div', { className: 'col48 right' }, _react2.default.createElement(_listing2.default, { title: 'Requests', list: this.state.requests }))), _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'col6 mlq' }, _react2.default.createElement(_form2.default, {
+        onChange: this.switchSemester }))), _react2.default.createElement('div', { className: 'bg-gray border-top-blue' }, _react2.default.createElement('div', { className: 'container pady2' }, _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'col48 left' }, _react2.default.createElement(_listing2.default, {
+        onRemove: this.removePost,
+        title: 'Posts',
+        list: this.state.posts })), _react2.default.createElement('div', { className: 'col48 right' }, _react2.default.createElement(_listing2.default, {
+        onRemove: this.removeRequest,
+        title: 'Requests',
+        list: this.state.requests }))))), _react2.default.createElement('div', { className: 'border-top-blue' }, _react2.default.createElement('div', { className: 'container pady2' }, _react2.default.createElement('div', { className: 'medium light border-bottom-gray' }, 'Submit'), _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'col6 mlq' }, _react2.default.createElement(_form2.default, {
         title: 'Post Class',
         onSubmit: this.submitPost,
         catalog: this.state.catalog }))), _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'col6 mlq' }, _react2.default.createElement(_form2.default, {
         title: 'Request Class',
         onSubmit: this.submitRequest,
-        catalog: this.state.catalog }))), _react2.default.createElement(_footer2.default, null));
+        catalog: this.state.catalog }))))), _react2.default.createElement(_footer2.default, null));
     }
   }]);
 
@@ -34071,9 +34183,9 @@ var Footer = (function (_React$Component) {
   _createClass(Footer, [{
     key: 'render',
     value: function render() {
-      return _react2.default.createElement('div', { className: 'border-top-gray pad1 small mb1 clearfix' }, _react2.default.createElement('div', { className: 'left' }, 'made with ', _react2.default.createElement('i', { className: 'fa fa-heart red' }), ' by the abrokwas'), _react2.default.createElement('div', { className: 'right' }, _react2.default.createElement('a', {
+      return _react2.default.createElement('div', { className: 'border-top-gray pad1 small clearfix bg-black white' }, _react2.default.createElement('div', { className: 'left' }, 'made with ', _react2.default.createElement('i', { className: 'fa fa-heart red' }), ' by the abrokwas'), _react2.default.createElement('div', { className: 'right' }, _react2.default.createElement('a', {
         className: 'twitter-share-button',
-        href: 'https://twitter.com/intent/tweet?text=Hello%20world' }, 'Tweet')), _react2.default.createElement('div', { className: 'right mr1 red' }, _react2.default.createElement('a', { href: 'https://github.com/course-market/course-market.github.io' }, _react2.default.createElement('i', { className: 'fa fa-code fa-2x' }))));
+        href: 'https://twitter.com/intent/tweet?text=Hello%20world' }, 'Tweet')), _react2.default.createElement('div', { className: 'right mr1 red' }, _react2.default.createElement('a', { href: 'https://github.com/course-market/course-market.github.io' }, _react2.default.createElement('i', { className: 'fa fa-code fa-2x white' }))));
     }
   }]);
 
@@ -34195,7 +34307,7 @@ var Form = (function (_React$Component) {
       if (this.state.course != null) {
         sections = getSections(this.props.catalog, this.state.department, this.state.course);
       }
-      return _react2.default.createElement('div', { className: 'mb5' }, _react2.default.createElement('div', { className: 'medium blue border-bottom-gray mb2' }, this.props.title), _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col3' }, 'Department:'), _react2.default.createElement('select', {
+      return _react2.default.createElement('div', { className: 'mb5' }, _react2.default.createElement('div', { className: 'medium light blue border-bottom-gray mb2' }, this.props.title), _react2.default.createElement('div', { className: 'mb1 clearfix' }, _react2.default.createElement('div', { className: 'col3' }, 'Department:'), _react2.default.createElement('select', {
         className: 'col7',
         onChange: this.onChange.bind(this, DEPARTMENT) }, _react2.default.createElement('option', { value: null }, ' -- select a department -- '), departments.map(function (d, i) {
         return _react2.default.createElement('option', { key: i }, d);
@@ -34338,15 +34450,15 @@ var Listing = (function (_React$Component) {
     key: 'render',
     value: function render() {
       var list = filter(this.props.list, this.state.query);
-      return _react2.default.createElement('div', null, _react2.default.createElement('div', { className: 'medium blue border-bottom-gray' }, this.props.title), _react2.default.createElement('div', { className: 'pad2 border-bottom-gray' }, _react2.default.createElement(_search_bar2.default, { onChange: this.onChange.bind(this) })), _react2.default.createElement('div', { className: 'row5' }, _react2.default.createElement(_reactAddonsCssTransitionGroup2.default, {
+      return _react2.default.createElement('div', null, _react2.default.createElement('div', { className: 'medium blue border-bottom-gray light' }, this.props.title), _react2.default.createElement('div', { className: 'pad2 border-bottom-gray' }, _react2.default.createElement(_search_bar2.default, { onChange: this.onChange.bind(this) })), _react2.default.createElement('div', { className: 'row5' }, _react2.default.createElement(_reactAddonsCssTransitionGroup2.default, {
         transitionName: 'list-fade',
         transitionEnterTimeout: 500,
-        transitionLeaveTimeout: 300 }, list.map(this.renderItem))));
+        transitionLeaveTimeout: 300 }, list.map(this.renderItem.bind(this)))));
     }
   }, {
     key: 'renderItem',
     value: function renderItem(data, i) {
-      return _react2.default.createElement(_listing_item2.default, { data: data, key: i });
+      return _react2.default.createElement(_listing_item2.default, { data: data, key: i, onRemove: this.props.onRemove });
     }
   }]);
 
@@ -34450,9 +34562,19 @@ var ListingItem = (function (_React$Component) {
       var meetDays = _props$data$courseDet2.meetDays;
 
       var emails = this.props.data.emails;
-      return _react2.default.createElement('div', { className: 'bg-blue pad0 rounded' }, _react2.default.createElement('div', { className: 'clearfix mb2' }, _react2.default.createElement('div', { className: 'col3' }, courseId), _react2.default.createElement('div', { className: 'col8' }, title)), _react2.default.createElement('div', { className: 'mb2' }, 'Time: ', meetDays, ' ', meetTimes), _react2.default.createElement('div', null, 'Requesters:', _react2.default.createElement('ul', null, emails.map(function (p, i) {
-        return _react2.default.createElement('li', { key: i }, _react2.default.createElement('a', { href: 'mailto:' + p }, p));
-      }))));
+      return _react2.default.createElement('div', { className: 'bg-blue pad0 rounded' }, _react2.default.createElement('div', { className: 'clearfix mb2' }, _react2.default.createElement('div', { className: 'col3' }, courseId), _react2.default.createElement('div', { className: 'col8' }, title)), _react2.default.createElement('div', { className: 'mb2' }, 'Time: ', meetDays, ' ', meetTimes), _react2.default.createElement('div', null, 'Requesters:', _react2.default.createElement('ul', null, emails.map(this.email.bind(this)))));
+    }
+  }, {
+    key: 'email',
+    value: function email(address, i) {
+      return _react2.default.createElement('li', { key: i, className: 'clearfix' }, _react2.default.createElement('div', { className: 'clearfix' }, _react2.default.createElement('div', { className: 'inline mr1' }, address), _react2.default.createElement('a', { href: 'mailto:' + address, onClick: function onClick(e) {
+          return e.stopPropagation();
+        } }, _react2.default.createElement('div', { className: 'fa fa-envelope inline email-icon mr1' })), _react2.default.createElement('div', {
+        className: 'fa fa-times inline close-icon mr1',
+        onClick: (function (e) {
+          this.props.onRemove({ courseId: this.props.data.courseId, email: address });
+          e.stopPropagation();
+        }).bind(this) })));
     }
   }]);
 
@@ -34578,20 +34700,29 @@ function _inherits(subClass, superClass) {
 var SemesterSelect = (function (_React$Component) {
   _inherits(SemesterSelect, _React$Component);
 
-  function SemesterSelect() {
+  function SemesterSelect(props) {
     _classCallCheck(this, SemesterSelect);
 
-    return _possibleConstructorReturn(this, Object.getPrototypeOf(SemesterSelect).apply(this, arguments));
+    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(SemesterSelect).call(this, props));
+
+    _this.state = { selected: 'spring_2016' };
+    return _this;
   }
 
   _createClass(SemesterSelect, [{
+    key: 'onChange',
+    value: function onChange(e) {
+      this.setState({ selected: e.target.value });
+      this.props.onChange(e);
+    }
+  }, {
     key: 'render',
     value: function render() {
       var semesters = this.props.semesters;
 
-      return _react2.default.createElement('div', null, _react2.default.createElement('select', { onChange: this.props.onChange.bind(this) }, semesters.map(function (s, i) {
+      return _react2.default.createElement('div', null, _react2.default.createElement('div', { className: 'inline mr1' }, 'Semester:'), _react2.default.createElement('div', { className: 'inline' }, _react2.default.createElement('select', { onChange: this.onChange.bind(this), value: this.state.selected }, semesters.map(function (s, i) {
         return _react2.default.createElement('option', { key: i, value: s }, parse(s));
-      })));
+      }))));
     }
   }]);
 
@@ -34661,7 +34792,7 @@ var Title = (function (_React$Component) {
   _createClass(Title, [{
     key: 'render',
     value: function render() {
-      return _react2.default.createElement('div', { className: 'large blue center mb2' }, 'W&M Classified');
+      return _react2.default.createElement('div', { className: 'large mb2 light' }, 'W&M Classified');
     }
   }]);
 
@@ -34704,7 +34835,8 @@ function courseMarketApp() {
       return state.set('semesters', _immutable2.default.fromJS(window.COURSE_MARKET_DATA.semesters));
 
     case _actions.LOAD_CATALOG:
-      return state.set('catalog', _immutable2.default.fromJS(window.COURSE_MARKET_DATA.catalog));
+      return state.set('catalog', _immutable2.default.fromJS(window.COURSE_MARKET_DATA.catalog)).set('posts', _immutable2.default.List([])) // eslint-disable-line new-cap
+      .set('requests', _immutable2.default.List([])); // eslint-disable-line new-cap
 
     case _actions.LOAD_POSTS:
       return state.set('posts', _immutable2.default.fromJS(window.COURSE_MARKET_DATA.posts));
@@ -34714,12 +34846,12 @@ function courseMarketApp() {
 
     case _actions.SUBMIT_POST:
       idx = state.get('posts').findIndex(function (p) {
-        return p.courseId === action.data.courseId;
+        return p.get('courseId') === action.data.courseId;
       });
       if (idx === -1) {
         return state.set('posts', state.get('posts').push(_immutable2.default.fromJS({ courseId: action.data.courseId, emails: [action.data.email] })));
       } else {
-        return state.setIn(['posts', idx, 'emails'], state.getIn('posts', idx, 'emails').push(action.data.email));
+        return state.setIn(['posts', idx, 'emails'], state.getIn(['posts', idx, 'emails']).push(action.data.email));
       }
       break;
 
@@ -34730,7 +34862,31 @@ function courseMarketApp() {
       if (idx === -1) {
         return state.set('requests', state.get('requests').push(_immutable2.default.fromJS({ courseId: action.data.courseId, emails: [action.data.email] })));
       } else {
-        return state.setIn(['requests', idx, 'emails'], state.getIn('requests', idx, 'emails').push(action.data.email));
+        return state.setIn(['requests', idx, 'emails'], state.getIn(['requests', idx, 'emails']).push(action.data.email));
+      }
+      break;
+
+    case _actions.DELETE_POST:
+      idx = state.get('posts').findIndex(function (p) {
+        return p.get('courseId') === action.data.courseId;
+      });
+      state = state.setIn(['posts', idx, 'emails'], state.getIn(['posts', idx, 'emails']).filterNot(function (e) {
+        return e === action.data.email;
+      }));
+      if (state.getIn(['posts', idx, 'emails']).size === 0) {
+        return state.set('posts', state.get('posts').delete(idx));
+      }
+      break;
+
+    case _actions.DELETE_REQUEST:
+      idx = state.get('requests').findIndex(function (p) {
+        return p.get('courseId') === action.data.courseId;
+      });
+      state = state.setIn(['requests', idx, 'emails'], state.getIn(['requests', idx, 'emails']).filterNot(function (e) {
+        return e === action.data.email;
+      }));
+      if (state.getIn(['requests', idx, 'emails']).size === 0) {
+        return state.set('requests', state.get('requests').delete(idx));
       }
       break;
 

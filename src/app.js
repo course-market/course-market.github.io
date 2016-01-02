@@ -8,7 +8,9 @@ import {
   fetchPosts,
   fetchRequests,
   submitPostAPI,
-  submitRequestAPI
+  submitRequestAPI,
+  deletePostAPI,
+  deleteRequestAPI
 } from './api';
 import {
   switchSemester,
@@ -17,7 +19,9 @@ import {
   loadPosts,
   loadRequests,
   submitPost,
-  submitRequest
+  submitRequest,
+  deletePost,
+  deleteRequest
 } from './actions';
 import courseMarketApp from './reducers';
 
@@ -40,7 +44,6 @@ var store;
 (function() {
   store = createStore(courseMarketApp, Immutable.fromJS(window.COURSE_MARKET_DATA));
 })();
-
 
 function loadSemester(semester) {
   store.dispatch(switchSemester(semester));
@@ -94,6 +97,7 @@ export default class App extends React.Component {
   }
 
   switchSemester(e) {
+    window.COURSE_MARKET_DATA.semester = e.target.value;
     loadSemester(e.target.value);
   }
 
@@ -115,43 +119,94 @@ export default class App extends React.Component {
     });
   }
 
+  removePost(data) {
+    store.dispatch(deletePost(data));
+    deletePostAPI({
+      semester: store.getState().get('semester'),
+      email: data.email,
+      courseId: data.courseId
+    });
+  }
+
+  removeRequest(data) {
+    store.dispatch(deleteRequest(data));
+    deleteRequestAPI({
+      semester: store.getState().get('semester'),
+      email: data.email,
+      courseId: data.courseId
+    });
+  }
+
   render() {
     return (
-      <div className='container'>
+      <div className=''>
 
-        <Title />
-
-        <SemesterSelect
-          semesters={this.state.semesters}
-          onChange={this.switchSemester} />
-
-        <div className='clearfix'>
-          <div className='col48 left'>
-            <Listing title='Posts' list={this.state.posts} />
+        {/* Header */}
+        <div className='container clearfix'>
+          <div className='col8'>
+            <Title />
           </div>
-          <div className='col48 right'>
-            <Listing title='Requests' list={this.state.requests} />
+          <div className='col3'>
+            <SemesterSelect
+              semesters={this.state.semesters}
+              onChange={this.switchSemester} />
           </div>
         </div>
 
-        <div className='clearfix'>
-          <div className='col6 mlq'>
-            <Form
-              title='Post Class'
-              onSubmit={this.submitPost}
-              catalog={this.state.catalog} />
+        {/* Listings */}
+        <div className='bg-gray border-top-blue'>
+          <div className='container pady2'>
+
+
+            <div className='clearfix'>
+              <div className='col48 left'>
+                <Listing
+                  onRemove={this.removePost}
+                  title='Posts'
+                  list={this.state.posts} />
+              </div>
+
+              <div className='col48 right'>
+                <Listing
+                  onRemove={this.removeRequest}
+                  title='Requests'
+                  list={this.state.requests} />
+              </div>
+            </div>
+
           </div>
         </div>
 
-        <div className='clearfix'>
-          <div className='col6 mlq'>
-            <Form
-              title='Request Class'
-              onSubmit={this.submitRequest}
-              catalog={this.state.catalog} />
+        {/* Forms */}
+        <div className='border-top-blue'>
+          <div className='container pady2'>
+
+            <div className='medium light border-bottom-gray'>
+              Submit
+            </div>
+
+            <div className='clearfix'>
+              <div className='col6 mlq'>
+                <Form
+                  title='Post Class'
+                  onSubmit={this.submitPost}
+                  catalog={this.state.catalog} />
+              </div>
+            </div>
+
+            <div className='clearfix'>
+              <div className='col6 mlq'>
+                <Form
+                  title='Request Class'
+                  onSubmit={this.submitRequest}
+                  catalog={this.state.catalog} />
+              </div>
+            </div>
+
           </div>
         </div>
 
+        {/* Footer */}
         <Footer />
 
       </div>

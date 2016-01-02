@@ -5,10 +5,18 @@
 const URL = 'http://ec2-54-173-94-238.compute-1.amazonaws.com:8080';
 //const URL = 'http://localhost:8080'; // for development
 
+/**
+ * Submit a post
+ *
+ * @param data
+ * @param {String} data.semester
+ * @param {String} data.email
+ * @param {String} data.courseId }
+ */
 export function submitPostAPI(data) {
   return new Promise((resolve, reject) => {
     let { semester } = data;
-    fetch(`${URL}/submit/post/${semester}`, {
+    fetch(`${URL}/post/submit/${semester}`, {
       method: 'POST',
       headers: new Headers({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data)
@@ -18,10 +26,18 @@ export function submitPostAPI(data) {
   });
 }
 
+/**
+ * Submit a request
+ *
+ * @param data
+ * @param {String} data.semester
+ * @param {String} data.email
+ * @param {String} data.courseId
+ */
 export function submitRequestAPI(data) {
   return new Promise((resolve, reject) => {
     let { semester } = data;
-    fetch(`${URL}/submit/request/${semester}`, {
+    fetch(`${URL}/request/submit/${semester}`, {
       method: 'POST',
       headers: new Headers({ 'Content-Type': 'application/json' }),
       body: JSON.stringify(data)
@@ -31,6 +47,47 @@ export function submitRequestAPI(data) {
   });
 }
 
+/**
+ * Delete a post
+ *
+ * @param data
+ * @param {String} data.semester
+ * @param {String} data.email
+ * @param {String} data.courseId
+ */
+export function deletePostAPI(data) {
+  return new Promise((resolve, reject) => {
+    let { semester } = data;
+    let courseId = encodeURIComponent(data.courseId);
+    let email = encodeURIComponent(data.email);
+    fetch(`${URL}/post/delete/${semester}/${courseId}/${email}`, {method: 'DELETE'})
+      .then(res => resolve(res))
+      .catch(e => reject(e));
+  });
+}
+
+/**
+ * Delete a request
+ *
+ * @param data
+ * @param {String} data.semester
+ * @param {String} data.email
+ * @param {String} data.courseId
+ */
+export function deleteRequestAPI(data) {
+  return new Promise((resolve, reject) => {
+    let { semester } = data;
+    let courseId = encodeURIComponent(data.courseId);
+    let email = encodeURIComponent(data.email);
+    fetch(`${URL}/request/delete/${semester}/${courseId}/${email}`, {method: 'DELETE'})
+      .then(res => resolve(res))
+      .then(e => reject(e));
+  });
+}
+
+/**
+ * @param {String} semester
+ */
 export function fetchPosts(semester) {
   return new Promise((resolve, reject) => {
     fetch(`${URL}/posts/${semester}`)
@@ -40,6 +97,9 @@ export function fetchPosts(semester) {
   });
 }
 
+/**
+ * @param {String} semester
+ */
 export function fetchRequests(semester) {
   return new Promise((resolve, reject) => {
     fetch(`${URL}/requests/${semester}`)
@@ -49,6 +109,9 @@ export function fetchRequests(semester) {
   });
 }
 
+/**
+ * @param {String} semester
+ */
 export function fetchCatalog(semester) {
   return new Promise((resolve, reject) => {
     fetch(`${URL}/catalog/${semester}`)

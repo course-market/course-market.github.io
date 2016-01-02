@@ -6,6 +6,8 @@ export const LOAD_POSTS      = 'LOAD_POSTS';
 export const LOAD_REQUESTS   = 'LOAD_REQUESTS';
 export const SUBMIT_POST     = 'SUBMIT_POST';
 export const SUBMIT_REQUEST  = 'SUBMIT_REQUEST';
+export const DELETE_POST     = 'DELETE_POST';
+export const DELETE_REQUEST  = 'DELETE_REQUEST';
 
 export function switchSemester(semester) {
   return { type: SWITCH_SEMESTER, semester };
@@ -33,5 +35,13 @@ export function submitPost(data) {
 
 export function submitRequest(data) {
   return { type: SUBMIT_REQUEST, data };
+}
+
+export function deletePost(data) {
+  return { type: DELETE_POST, data };
+}
+
+export function deleteRequest(data) {
+  return { type: DELETE_REQUEST, data };
 }
 

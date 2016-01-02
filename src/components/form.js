@@ -50,7 +50,7 @@ export default class Form extends React.Component {
     return (
       <div className='mb5'>
 
-        <div className='medium blue border-bottom-gray mb2'>{this.props.title}</div>
+        <div className='medium light blue border-bottom-gray mb2'>{this.props.title}</div>
 
         <div className='mb1 clearfix'>
           <div className='col3'>Department:</div>

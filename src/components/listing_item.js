@@ -44,10 +44,31 @@ export default class ListingItem extends React.Component {
         <div>
           Requesters:
           <ul>
-            {emails.map((p, i) => <li key={i}><a href={`mailto:${p}`}>{p}</a></li>)}
+            {emails.map(this.email.bind(this))}
           </ul>
         </div>
       </div>
+    );
+  }
+
+  email(address, i) {
+    return (
+      <li key={i} className='clearfix'>
+        <div className='clearfix'>
+          <div className='inline mr1'>
+            {address}
+          </div>
+          <a href={`mailto:${address}`} onClick={e => e.stopPropagation()}>
+            <div className='fa fa-envelope inline email-icon mr1'></div>
+          </a>
+          <div
+            className='fa fa-times inline close-icon mr1'
+            onClick={function(e) {
+              this.props.onRemove({ courseId: this.props.data.courseId, email: address });
+              e.stopPropagation();
+            }.bind(this)}></div>
+        </div>
+      </li>
     );
   }
 
