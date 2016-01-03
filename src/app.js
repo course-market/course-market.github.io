@@ -31,6 +31,7 @@ import SemesterSelect from './components/semester_select';
 import Listing from './components/listing';
 import Form from './components/form';
 import Footer from './components/footer';
+import AboutModal from './components/about_modal.js';
 
 window.COURSE_MARKET_DATA = {
   semesters: [],
@@ -88,6 +89,7 @@ export default class App extends React.Component {
   constructor() {
     super();
     this.state = store.getState().toJS();
+    this.state.modalIsOpen = false;
   }
 
   componentDidMount() {
@@ -99,6 +101,14 @@ export default class App extends React.Component {
   switchSemester(e) {
     window.COURSE_MARKET_DATA.semester = e.target.value;
     loadSemester(e.target.value);
+  }
+
+  openAboutModal() {
+    this.setState({ modalIsOpen: true });
+  }
+
+  closeAboutModal() {
+    this.setState({ modalIsOpen: false });
   }
 
   submitPost(data) {
@@ -143,20 +153,25 @@ export default class App extends React.Component {
 
         {/* Header */}
         <div className='container clearfix'>
-          <div className='col8'>
+          <div className=''>
             <Title />
           </div>
-          <div className='col3'>
-            <SemesterSelect
-              semesters={this.state.semesters}
-              onChange={this.switchSemester} />
+          <div className='mb1 right'>
+            <div className='inline mr1'>
+              <SemesterSelect
+                semesters={this.state.semesters}
+                onChange={this.switchSemester} />
+            </div>
+            <div className='inline mr1'>|</div>
+            <div className='inline active' onClick={this.openAboutModal.bind(this)}>
+              About
+            </div>
           </div>
         </div>
 
         {/* Listings */}
         <div className='bg-gray border-top-blue'>
           <div className='container pady2'>
-
 
             <div className='clearfix'>
               <div className='col48 left'>
@@ -208,6 +223,11 @@ export default class App extends React.Component {
 
         {/* Footer */}
         <Footer />
+
+        {/* About Modal */}
+        <AboutModal
+          isOpen={this.state.modalIsOpen}
+          onRequestClose={this.closeAboutModal.bind(this)}/>
 
       </div>
     );

@@ -126,17 +126,19 @@ input:focus { outline: none; border: 1px solid #66c1ff; }
 
 input.invalid,
 input.invalid:hover,
-input.invalid:focus {
-  border: 1px solid #e74c3c;
-}
+input.invalid:focus { border: 1px solid #e74c3c; }
+
 input.valid,
 input.valid:hover,
-input.valid:focus {
-  border: 1px solid #2ecc71;
-}
+input.valid:focus { border: 1px solid #2ecc71; }
 
 .block { display: block; }
 .inline { display: inline-block; }
+.top-left {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+}
 
 // via http://www.mapbox.com/base/
 .col0  { float:left; width:04.1666%; max-width:50px; }
@@ -191,4 +193,14 @@ input.valid:focus {
 .close-icon  { color: red; }
 .email-icon:hover { color: white; }
 .close-icon:hover { color: white; }
+.modal-close-icon:hover { color: red; }
 
+.active:hover { color: #66c1ff; cursor: pointer; }
+
+// about modal
+.ReactModal__Overlay { -webkit-perspective: 600; perspective: 600; opacity: 0; }
+.ReactModal__Overlay--after-open { opacity: 1; transition: opacity 150ms ease-out; }
+.ReactModal__Content { -webkit-transform: scale(0.5) rotateX(-30deg); }
+.ReactModal__Content--after-open { -webkit-transform: scale(1) rotateX(0deg); transition: all 150ms ease-in; }
+.ReactModal__Overlay--before-close { opacity: 0; }
+.ReactModal__Content--before-close { -webkit-transform: scale(0.5) rotateX(30deg); transition: all 150ms ease-in; }

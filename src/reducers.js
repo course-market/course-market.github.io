@@ -44,8 +44,10 @@ function courseMarketApp(state = initialState, action) {
         return state
           .set('posts', state.get('posts').push(Immutable.fromJS({courseId: action.data.courseId, emails: [action.data.email]})));
       } else {
-        return state
-          .setIn(['posts', idx, 'emails'], state.getIn(['posts', idx, 'emails']).push(action.data.email));
+        if (!state.getIn(['posts', idx, 'emails']).contains(action.data.email)) {
+          return state
+            .setIn(['posts', idx, 'emails'], state.getIn(['posts', idx, 'emails']).push(action.data.email));
+        }
       }
       break;
 
@@ -55,8 +57,10 @@ function courseMarketApp(state = initialState, action) {
         return state
           .set('requests', state.get('requests').push(Immutable.fromJS({courseId: action.data.courseId, emails: [action.data.email]})));
       } else {
-        return state
-          .setIn(['requests', idx, 'emails'], state.getIn(['requests', idx, 'emails']).push(action.data.email));
+        if (!state.getIn(['requests', idx, 'emails']).contains(action.data.email)) {
+          return state
+            .setIn(['requests', idx, 'emails'], state.getIn(['requests', idx, 'emails']).push(action.data.email));
+        }
       }
       break;
 

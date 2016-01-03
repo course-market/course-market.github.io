@@ -78,13 +78,17 @@ export default class Form extends React.Component {
             className='col7'
             onChange={this.onChange.bind(this, SECTION)}>
             <option value={null}> -- select a section-- </option>
-            {sections.map((s, i) => <option key={i} value={s.number}>{s.meetDays} - {s.meetTimes}</option>)}
+            {sections.map((s, i) =>
+                <option key={i} value={s.number}>{s.meetDays} - {s.meetTimes}</option>)}
           </select>
         </div>}
 
         {this.state.section != null && <div className='mb1 clearfix'>
           <div className='col3'>WM Email:</div>
-          <input type='text' className={'border-gray col7' + (this.state.validEmail ? ' valid' : ' invalid')} onChange={this.onChange.bind(this, EMAIL)} />
+          <input
+            type='text'
+            className={'border-gray col7' + (this.state.validEmail ? ' valid' : ' invalid')}
+            onChange={this.onChange.bind(this, EMAIL)} />
         </div>}
 
         {this.state.validEmail && <div className='mb1 clearfix center'>
