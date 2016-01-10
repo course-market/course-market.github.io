@@ -26,7 +26,6 @@ import {
 import courseMarketApp from './reducers';
 
 // components
-import Title from './components/title';
 import SemesterSelect from './components/semester_select';
 import Listing from './components/listing';
 import Form from './components/form';
@@ -152,73 +151,59 @@ export default class App extends React.Component {
       <div className=''>
 
         {/* Header */}
-        <div className='container clearfix'>
-          <div className=''>
-            <Title />
-          </div>
-          <div className='mb1 right'>
-            <div className='inline mr1'>
-              <SemesterSelect
-                semesters={this.state.semesters}
-                onChange={this.switchSemester} />
+        <div className=''>
+          <header className=''>
+            <span className=''>W&M Classified</span>
+            <div className=''>
+              <div className=''>
+                <SemesterSelect
+                  semesters={this.state.semesters}
+                  onChange={this.switchSemester} />
+              </div>
+              <div className='' onClick={this.openAboutModal.bind(this)}>
+                About
+              </div>
             </div>
-            <div className='inline mr1'>|</div>
-            <div className='inline active' onClick={this.openAboutModal.bind(this)}>
-              About
-            </div>
-          </div>
+          </header>
         </div>
 
+
         {/* Listings */}
-        <div className='bg-gray border-top-blue'>
-          <div className='container pady2'>
+        <div className='mdl-grid'>
 
-            <div className='clearfix'>
-              <div className='col48 left'>
-                <Listing
-                  onRemove={this.removePost}
-                  title='Posts'
-                  list={this.state.posts} />
-              </div>
-
-              <div className='col48 right'>
-                <Listing
-                  onRemove={this.removeRequest}
-                  title='Requests'
-                  list={this.state.requests} />
-              </div>
-            </div>
-
+          <div className='mdl-cell mdl-cell--6-col'>
+            <Listing
+              onRemove={this.removePost}
+              title='Posts'
+              list={this.state.posts} />
           </div>
+
+          <div className='mdl-cell mdl-cell--6-col'>
+            <Listing
+              onRemove={this.removeRequest}
+              title='Requests'
+              list={this.state.requests} />
+          </div>
+
         </div>
 
         {/* Forms */}
-        <div className='border-top-blue'>
-          <div className='container pady2'>
+        <div className='mdl-grid'>
 
-            <div className='medium light border-bottom-gray'>
-              Submit
+            <div className='mdl-cell mdl-cell--6-col'>
+              <Form
+                title='Post Class'
+                onSubmit={this.submitPost}
+                catalog={this.state.catalog} />
             </div>
 
-            <div className='clearfix'>
-              <div className='col6 mlq'>
-                <Form
-                  title='Post Class'
-                  onSubmit={this.submitPost}
-                  catalog={this.state.catalog} />
-              </div>
+            <div className='mdl-cell mdl-cell--6-col'>
+              <Form
+                title='Request Class'
+                onSubmit={this.submitRequest}
+                catalog={this.state.catalog} />
             </div>
 
-            <div className='clearfix'>
-              <div className='col6 mlq'>
-                <Form
-                  title='Request Class'
-                  onSubmit={this.submitRequest}
-                  catalog={this.state.catalog} />
-              </div>
-            </div>
-
-          </div>
         </div>
 
         {/* Footer */}

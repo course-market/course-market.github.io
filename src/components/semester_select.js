@@ -16,7 +16,7 @@ export default class SemesterSelect extends React.Component {
     return (
       <div>
         <div className=''>
-          <select className='active' onChange={this.onChange.bind(this)} value={this.state.selected}>
+          <select className='' onChange={this.onChange.bind(this)} value={this.state.selected}>
             {semesters.map((s, i) =>
                 <option key={i} value={s}>{parse(s)}</option>)}
           </select>

@@ -8,12 +8,18 @@ export default class SearchBar extends React.Component {
 
   render() {
     return (
-      <div className='clearfix'>
-        <i className='fa fa-search fa-2x col1 mr1 gray'></i>
-        <input
-          type='text'
-          className={'col10'}
-          onChange={this.props.onChange.bind(this)} />
+      <div className="mdl-textfield mdl-js-textfield mdl-textfield--expandable">
+        <label className="mdl-button mdl-js-button mdl-button--icon" htmlFor={this.props.id}>
+          <i className="material-icons">search</i>
+        </label>
+        <div className="mdl-textfield__expandable-holder">
+          <input
+            className="mdl-textfield__input"
+            type="text"
+            id={this.props.id}
+            onChange={this.props.onChange.bind(this)}/>
+          <label className="mdl-textfield__label" htmlFor="sample-expandable">Expandable Input</label>
+        </div>
       </div>
     );
   }

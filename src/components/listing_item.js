@@ -13,7 +13,7 @@ export default class ListingItem extends React.Component {
 
   render() {
     return (
-      <div className='clearfix listing-item mb1 pad0' onClick={this.toggleDetails.bind(this)}>
+      <div className='' onClick={this.toggleDetails.bind(this)}>
         {this.state.details ? this.detailView() : this.briefView()}
       </div>
     );
@@ -23,8 +23,8 @@ export default class ListingItem extends React.Component {
     let { courseId, title } = this.props.data.courseDetails;
     return (
       <div>
-        <div className='col3'>{courseId}</div>
-        <div className='col8'>{title}</div>
+        <div className=''>{courseId}</div>
+        <div className=''>{title}</div>
       </div>
     );
   }
@@ -33,12 +33,12 @@ export default class ListingItem extends React.Component {
     let { courseId, title, meetTimes, meetDays } = this.props.data.courseDetails;
     let emails = this.props.data.emails;
     return (
-      <div className='bg-blue pad0 rounded'>
-        <div className='clearfix mb2'>
-          <div className='col3'>{courseId}</div>
-          <div className='col8'>{title}</div>
+      <div className=''>
+        <div className=''>
+          <div className=''>{courseId}</div>
+          <div className=''>{title}</div>
         </div>
-        <div className='mb2'>
+        <div className=''>
           Time: {meetDays} {meetTimes}
         </div>
         <div>
@@ -53,20 +53,24 @@ export default class ListingItem extends React.Component {
 
   email(address, i) {
     return (
-      <li key={i} className='clearfix'>
-        <div className='clearfix'>
-          <div className='inline mr1'>
+      <li key={i} className=''>
+        <div className='mdl-grid'>
+          <div className='mdl-cell mdl-cell--6-col'>
             {address}
           </div>
-          <a href={`mailto:${address}`} onClick={e => e.stopPropagation()}>
-            <div className='fa fa-envelope inline email-icon mr1'></div>
-          </a>
-          <div
-            className='fa fa-times inline close-icon mr1'
-            onClick={function(e) {
-              this.props.onRemove({ courseId: this.props.data.courseId, email: address });
-              e.stopPropagation();
-            }.bind(this)}></div>
+          <div className='mdl-cell mdl-cell--1-col'>
+            <a href={`mailto:${address}`} onClick={e => e.stopPropagation()}>
+                  <div className='fa fa-envelope'></div>
+            </a>
+          </div>
+          <div className='mdl-cell mdl-cell--1-col'>
+            <div
+              className='fa fa-times'
+              onClick={function(e) {
+                this.props.onRemove({ courseId: this.props.data.courseId, email: address });
+                e.stopPropagation();
+              }.bind(this)}></div>
+            </div>
         </div>
       </li>
     );

@@ -18,12 +18,14 @@ export default class Listing extends React.Component {
   render() {
     let list = filter(this.props.list, this.state.query);
     return (
-      <div>
-        <div className='medium blue border-bottom-gray light'>{this.props.title}</div>
-        <div className='pad2 border-bottom-gray'>
-          <SearchBar onChange={this.onChange.bind(this)} />
+      <div className='mdl-card mdl-shadow--2dp'>
+        <div className={`mdl-card__title ${this.props.title}-title`}>
+          <h2 className="mdl-card__title-text">{this.props.title}</h2>
         </div>
-        <div className='row5'>
+        <div className='mdl-card__supporting-text'>
+          <SearchBar onChange={this.onChange.bind(this)} id={this.props.title} />
+        </div>
+        <div className='mdl-card__actions mdl-card--border'>
           <ReactCSSTransitionGroup
             transitionName='list-fade'
             transitionEnterTimeout={500}

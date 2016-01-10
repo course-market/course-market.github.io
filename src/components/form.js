@@ -48,52 +48,63 @@ export default class Form extends React.Component {
       sections = getSections(this.props.catalog, this.state.department, this.state.course);
     }
     return (
-      <div className='mb5'>
+      <div className='mdl-card mdl-shadow--2dp'>
 
-        <div className='medium light blue border-bottom-gray mb2'>{this.props.title}</div>
-
-        <div className='mb1 clearfix'>
-          <div className='col3'>Department:</div>
-          <select
-            className='col7'
-            onChange={this.onChange.bind(this, DEPARTMENT)}>
-            <option value={null}> -- select a department -- </option>
-            {departments.map((d, i) => <option key={i}>{d}</option>)}
-          </select>
+        <div className={`mdl-card__title ${this.props.title.replace(' ', '-')}-title`}>
+          <h2 className='mdl-card__title-text'>{this.props.title}</h2>
         </div>
 
-        {this.state.department !== null && <div className='mb1 clearfix'>
-          <div className='col3'>Course:</div>
-          <select
-            className='col7'
-            onChange={this.onChange.bind(this, COURSE)}>
-            <option value={null}> -- select a course -- </option>
-            {courses.map((c, i) => <option key={i} value={c.id}>{c.id} - {c.title}</option>)}
-          </select>
-        </div>}
+        <div className='mld-card__supporting-text'>
+          <div className="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <input
+              className="mdl-textfield__input is-invalid"
+              type="text"
+              id="email-input"
+              onChange={this.onChange.bind(this, EMAIL)} />
+            <label className="mdl-textfield__label" htmlFor="email-input">Email</label>
+          </div>
+        </div>
 
-        {this.state.course !== null && <div className='mb1 clearfix'>
-          <div className='col3'>Section:</div>
-          <select
-            className='col7'
-            onChange={this.onChange.bind(this, SECTION)}>
-            <option value={null}> -- select a section-- </option>
-            {sections.map((s, i) =>
-                <option key={i} value={s.number}>{s.meetDays} - {s.meetTimes}</option>)}
-          </select>
-        </div>}
+        <div className='mdl-card__actions mdl-card--border'>
 
-        {this.state.section != null && <div className='mb1 clearfix'>
-          <div className='col3'>WM Email:</div>
-          <input
-            type='text'
-            className={'border-gray col7' + (this.state.validEmail ? ' valid' : ' invalid')}
-            onChange={this.onChange.bind(this, EMAIL)} />
-        </div>}
+          <div className=''>
+            <div className=''>Department:</div>
+            <select
+              className=''
+              onChange={this.onChange.bind(this, DEPARTMENT)}>
+              <option value={null}> -- select a department -- </option>
+              {departments.map((d, i) => <option key={i}>{d}</option>)}
+            </select>
+          </div>
 
-        {this.state.validEmail && <div className='mb1 clearfix center'>
-          <button onClick={this.submit.bind(this)} className='button rounded border-blue'>Post</button>
-        </div>}
+          {this.state.department !== null && <div className=''>
+            <div className=''>Course:</div>
+            <select
+              className=''
+              onChange={this.onChange.bind(this, COURSE)}>
+              <option value={null}> -- select a course -- </option>
+              {courses.map((c, i) => <option key={i} value={c.id}>{c.id} - {c.title}</option>)}
+            </select>
+          </div>}
+
+          {this.state.course !== null && <div className=''>
+            <div className=''>Section:</div>
+            <select
+              className=''
+              onChange={this.onChange.bind(this, SECTION)}>
+              <option value={null}> -- select a section-- </option>
+              {sections.map((s, i) =>
+                  <option key={i} value={s.number}>{s.meetDays} - {s.meetTimes}</option>)}
+            </select>
+          </div>}
+
+          {this.state.validEmail && <div className=''>
+            <button
+              onClick={this.submit.bind(this)}
+              className='mdl-button mdl-js-button mdl-button--raised mdl-button--colored'>Post</button>
+          </div>}
+
+        </div>
 
       </div>
     );
